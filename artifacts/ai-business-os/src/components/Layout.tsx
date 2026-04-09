@@ -23,7 +23,9 @@ const navItems = [
 function getInitials(name?: string) {
   if (!name) return "?";
   const parts = name.trim().split(" ");
-  return parts.length >= 2 ? parts[0][0] + parts[1][0] : parts[0].slice(0, 2).toUpperCase();
+  return parts.length >= 2
+    ? parts[0][0] + parts[1][0]
+    : parts[0].slice(0, 2).toUpperCase();
 }
 
 export default function Layout({ children }: { children: React.ReactNode }) {
@@ -39,18 +41,23 @@ export default function Layout({ children }: { children: React.ReactNode }) {
 
   return (
     <div className="flex h-screen overflow-hidden bg-background">
+      {/* Sidebar */}
       <aside className="flex flex-col w-56 min-h-screen bg-sidebar text-sidebar-foreground border-r border-sidebar-border flex-shrink-0">
         {/* Logo */}
         <div className="flex items-center gap-2.5 px-4 h-14 border-b border-sidebar-border">
           <div className="flex items-center justify-center w-7 h-7 rounded-lg bg-sidebar-primary shadow-sm">
             <Zap size={14} className="text-white" />
           </div>
-          <span className="text-[13px] font-semibold text-white tracking-tight">AI Business OS</span>
+          <span className="text-[13px] font-semibold text-white tracking-tight">
+            AI Business OS
+          </span>
         </div>
 
         {/* Nav section label */}
         <div className="px-4 pt-5 pb-1.5">
-          <p className="text-[10px] font-semibold uppercase tracking-widest text-sidebar-foreground/40">Workspace</p>
+          <p className="text-[10px] font-semibold uppercase tracking-widest text-sidebar-foreground/40">
+            Workspace
+          </p>
         </div>
 
         {/* Nav links */}
@@ -58,7 +65,9 @@ export default function Layout({ children }: { children: React.ReactNode }) {
           {navItems.map(({ href, label, icon: Icon }) => {
             const isActive = location === href || location.startsWith(href + "/");
             return (
-              <Link key={href} href={href}
+              <Link
+                key={href}
+                href={href}
                 data-testid={`nav-${label.toLowerCase()}`}
                 className={`flex items-center gap-2.5 px-3 py-2 rounded-lg text-[13px] transition-all cursor-pointer select-none ${
                   isActive
@@ -106,7 +115,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
         )}
       </aside>
 
-      {/* Main content with top bar */}
+      {/* Main content */}
       <div className="flex-1 flex flex-col overflow-hidden">
         {/* Top bar */}
         <header className="flex items-center justify-between px-6 h-14 border-b border-border bg-card/80 backdrop-blur-sm flex-shrink-0">
