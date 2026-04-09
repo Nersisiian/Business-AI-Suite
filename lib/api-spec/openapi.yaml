@@ -3,13 +3,27 @@ info:
   # Do not change the title, if the title changes, the import paths will be broken
   title: Api
   version: 0.1.0
-  description: API specification
+  description: AI Business OS API
 servers:
   - url: /api
     description: Base API path
 tags:
   - name: health
     description: Health operations
+  - name: auth
+    description: Authentication
+  - name: users
+    description: User management
+  - name: clients
+    description: Client management
+  - name: deals
+    description: Deal management
+  - name: tasks
+    description: Task management
+  - name: ai
+    description: AI features
+  - name: dashboard
+    description: Dashboard aggregates
 paths:
   /healthz:
     get:
@@ -24,7 +38,557 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/HealthStatus"
+
+  /auth/register:
+    post:
+      operationId: register
+      tags: [auth]
+      summary: Register a new user
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/RegisterBody"
+      responses:
+        "201":
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AuthResponse"
+        "400":
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "409":
+          description: Email already exists
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
+  /auth/login:
+    post:
+      operationId: login
+      tags: [auth]
+      summary: Login
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/LoginBody"
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AuthResponse"
+        "401":
+          description: Invalid credentials
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
+  /auth/me:
+    get:
+      operationId: getMe
+      tags: [auth]
+      summary: Get current user
+      security:
+        - bearerAuth: []
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/User"
+        "401":
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
+  /clients:
+    get:
+      operationId: listClients
+      tags: [clients]
+      summary: List all clients
+      security:
+        - bearerAuth: []
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Client"
+    post:
+      operationId: createClient
+      tags: [clients]
+      summary: Create a client
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateClientBody"
+      responses:
+        "201":
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Client"
+        "400":
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
+  /clients/{id}:
+    get:
+      operationId: getClient
+      tags: [clients]
+      summary: Get a client
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Client"
+        "404":
+          description: Not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+    patch:
+      operationId: updateClient
+      tags: [clients]
+      summary: Update a client
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UpdateClientBody"
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Client"
+        "404":
+          description: Not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+    delete:
+      operationId: deleteClient
+      tags: [clients]
+      summary: Delete a client
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "204":
+          description: Deleted
+        "404":
+          description: Not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
+  /deals:
+    get:
+      operationId: listDeals
+      tags: [deals]
+      summary: List all deals
+      security:
+        - bearerAuth: []
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Deal"
+    post:
+      operationId: createDeal
+      tags: [deals]
+      summary: Create a deal
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateDealBody"
+      responses:
+        "201":
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Deal"
+        "400":
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
+  /deals/{id}:
+    get:
+      operationId: getDeal
+      tags: [deals]
+      summary: Get a deal
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Deal"
+        "404":
+          description: Not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+    patch:
+      operationId: updateDeal
+      tags: [deals]
+      summary: Update a deal
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UpdateDealBody"
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Deal"
+        "404":
+          description: Not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+    delete:
+      operationId: deleteDeal
+      tags: [deals]
+      summary: Delete a deal
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "204":
+          description: Deleted
+        "404":
+          description: Not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
+  /tasks:
+    get:
+      operationId: listTasks
+      tags: [tasks]
+      summary: List all tasks
+      security:
+        - bearerAuth: []
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Task"
+    post:
+      operationId: createTask
+      tags: [tasks]
+      summary: Create a task
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateTaskBody"
+      responses:
+        "201":
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Task"
+        "400":
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
+  /tasks/{id}:
+    get:
+      operationId: getTask
+      tags: [tasks]
+      summary: Get a task
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Task"
+        "404":
+          description: Not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+    patch:
+      operationId: updateTask
+      tags: [tasks]
+      summary: Update a task
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UpdateTaskBody"
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Task"
+        "404":
+          description: Not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+    delete:
+      operationId: deleteTask
+      tags: [tasks]
+      summary: Delete a task
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "204":
+          description: Deleted
+        "404":
+          description: Not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
+  /dashboard/summary:
+    get:
+      operationId: getDashboardSummary
+      tags: [dashboard]
+      summary: Get dashboard summary stats
+      security:
+        - bearerAuth: []
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/DashboardSummary"
+
+  /dashboard/deal-pipeline:
+    get:
+      operationId: getDealPipeline
+      tags: [dashboard]
+      summary: Get deal pipeline breakdown by status
+      security:
+        - bearerAuth: []
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/DealPipelineItem"
+
+  /dashboard/recent-activity:
+    get:
+      operationId: getRecentActivity
+      tags: [dashboard]
+      summary: Get recent activity feed
+      security:
+        - bearerAuth: []
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/ActivityItem"
+
+  /ai/suggest-reply:
+    post:
+      operationId: suggestReply
+      tags: [ai]
+      summary: AI suggest reply for client message
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/SuggestReplyBody"
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SuggestReplyResponse"
+        "500":
+          description: AI error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
+  /ai/analyze-deal:
+    post:
+      operationId: analyzeDeal
+      tags: [ai]
+      summary: AI analyze deal and predict success probability
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/AnalyzeDealBody"
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AnalyzeDealResponse"
+        "500":
+          description: AI error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
 components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
   schemas:
     HealthStatus:
       type: object
@@ -34,3 +598,381 @@ components:
       required:
         - status
 
+    ErrorResponse:
+      type: object
+      properties:
+        error:
+          type: string
+      required:
+        - error
+
+    User:
+      type: object
+      properties:
+        id:
+          type: integer
+        email:
+          type: string
+        name:
+          type: string
+        createdAt:
+          type: string
+      required:
+        - id
+        - email
+        - name
+        - createdAt
+
+    RegisterBody:
+      type: object
+      properties:
+        email:
+          type: string
+        password:
+          type: string
+        name:
+          type: string
+      required:
+        - email
+        - password
+        - name
+
+    LoginBody:
+      type: object
+      properties:
+        email:
+          type: string
+        password:
+          type: string
+      required:
+        - email
+        - password
+
+    AuthResponse:
+      type: object
+      properties:
+        token:
+          type: string
+        user:
+          $ref: "#/components/schemas/User"
+      required:
+        - token
+        - user
+
+    Client:
+      type: object
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+        email:
+          type: string
+        phone:
+          type: ["string", "null"]
+        company:
+          type: ["string", "null"]
+        status:
+          type: string
+          enum: [active, inactive, prospect]
+        createdAt:
+          type: string
+        updatedAt:
+          type: string
+      required:
+        - id
+        - name
+        - email
+        - phone
+        - company
+        - status
+        - createdAt
+        - updatedAt
+
+    CreateClientBody:
+      type: object
+      properties:
+        name:
+          type: string
+        email:
+          type: string
+        phone:
+          type: ["string", "null"]
+        company:
+          type: ["string", "null"]
+        status:
+          type: string
+          enum: [active, inactive, prospect]
+      required:
+        - name
+        - email
+
+    UpdateClientBody:
+      type: object
+      properties:
+        name:
+          type: string
+        email:
+          type: string
+        phone:
+          type: ["string", "null"]
+        company:
+          type: ["string", "null"]
+        status:
+          type: string
+          enum: [active, inactive, prospect]
+
+    Deal:
+      type: object
+      properties:
+        id:
+          type: integer
+        title:
+          type: string
+        value:
+          type: number
+        status:
+          type: string
+          enum: [new, negotiation, won, lost, on_hold]
+        clientId:
+          type: ["integer", "null"]
+        clientName:
+          type: ["string", "null"]
+        notes:
+          type: ["string", "null"]
+        createdAt:
+          type: string
+        updatedAt:
+          type: string
+      required:
+        - id
+        - title
+        - value
+        - status
+        - clientId
+        - clientName
+        - notes
+        - createdAt
+        - updatedAt
+
+    CreateDealBody:
+      type: object
+      properties:
+        title:
+          type: string
+        value:
+          type: number
+        status:
+          type: string
+          enum: [new, negotiation, won, lost, on_hold]
+        clientId:
+          type: ["integer", "null"]
+        notes:
+          type: ["string", "null"]
+      required:
+        - title
+        - value
+
+    UpdateDealBody:
+      type: object
+      properties:
+        title:
+          type: string
+        value:
+          type: number
+        status:
+          type: string
+          enum: [new, negotiation, won, lost, on_hold]
+        clientId:
+          type: ["integer", "null"]
+        notes:
+          type: ["string", "null"]
+
+    Task:
+      type: object
+      properties:
+        id:
+          type: integer
+        title:
+          type: string
+        description:
+          type: ["string", "null"]
+        status:
+          type: string
+          enum: [todo, in_progress, done]
+        priority:
+          type: string
+          enum: [low, medium, high]
+        deadline:
+          type: ["string", "null"]
+        dealId:
+          type: ["integer", "null"]
+        clientId:
+          type: ["integer", "null"]
+        createdAt:
+          type: string
+        updatedAt:
+          type: string
+      required:
+        - id
+        - title
+        - description
+        - status
+        - priority
+        - deadline
+        - dealId
+        - clientId
+        - createdAt
+        - updatedAt
+
+    CreateTaskBody:
+      type: object
+      properties:
+        title:
+          type: string
+        description:
+          type: ["string", "null"]
+        status:
+          type: string
+          enum: [todo, in_progress, done]
+        priority:
+          type: string
+          enum: [low, medium, high]
+        deadline:
+          type: ["string", "null"]
+        dealId:
+          type: ["integer", "null"]
+        clientId:
+          type: ["integer", "null"]
+      required:
+        - title
+
+    UpdateTaskBody:
+      type: object
+      properties:
+        title:
+          type: string
+        description:
+          type: ["string", "null"]
+        status:
+          type: string
+          enum: [todo, in_progress, done]
+        priority:
+          type: string
+          enum: [low, medium, high]
+        deadline:
+          type: ["string", "null"]
+        dealId:
+          type: ["integer", "null"]
+        clientId:
+          type: ["integer", "null"]
+
+    DashboardSummary:
+      type: object
+      properties:
+        totalClients:
+          type: integer
+        totalDeals:
+          type: integer
+        totalRevenue:
+          type: number
+        wonDeals:
+          type: integer
+        openTasks:
+          type: integer
+        activeClients:
+          type: integer
+      required:
+        - totalClients
+        - totalDeals
+        - totalRevenue
+        - wonDeals
+        - openTasks
+        - activeClients
+
+    DealPipelineItem:
+      type: object
+      properties:
+        status:
+          type: string
+        count:
+          type: integer
+        value:
+          type: number
+      required:
+        - status
+        - count
+        - value
+
+    ActivityItem:
+      type: object
+      properties:
+        id:
+          type: string
+        type:
+          type: string
+        description:
+          type: string
+        createdAt:
+          type: string
+      required:
+        - id
+        - type
+        - description
+        - createdAt
+
+    SuggestReplyBody:
+      type: object
+      properties:
+        clientMessage:
+          type: string
+        clientName:
+          type: ["string", "null"]
+        context:
+          type: ["string", "null"]
+      required:
+        - clientMessage
+
+    SuggestReplyResponse:
+      type: object
+      properties:
+        reply:
+          type: string
+      required:
+        - reply
+
+    AnalyzeDealBody:
+      type: object
+      properties:
+        dealId:
+          type: ["integer", "null"]
+        title:
+          type: string
+        value:
+          type: number
+        status:
+          type: string
+        notes:
+          type: ["string", "null"]
+        clientName:
+          type: ["string", "null"]
+      required:
+        - title
+        - value
+        - status
+
+    AnalyzeDealResponse:
+      type: object
+      properties:
+        probability:
+          type: number
+        reasoning:
+          type: string
+        recommendations:
+          type: array
+          items:
+            type: string
+      required:
+        - probability
+        - reasoning
+        - recommendations
